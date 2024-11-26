@@ -38,9 +38,19 @@ public class TaskManager {
     }
 
     public void removeTask(int id) {
-        simpleTasks.remove(id);
-        epicTasks.remove(id);
-        subTasks.remove(id);
+        if (subTasks.containsKey(id)) {
+            EpicTask epicTask = epicTasks.get(subTasks.get(id).getEpicId());
+            epicTask.removeSubtask(subTasks.get(id));
+            this.calculateEpicStatus(epicTask);
+            subTasks.remove(id);
+        } else if (epicTasks.containsKey(id)) {
+            for (SubTask subTask : getSubtasksOfEpic(id)) {
+                subTasks.remove(subTask.getId());
+            }
+            epicTasks.remove(id);
+        } else {
+            simpleTasks.remove(id);
+        }
     }
 
     public void clearAll() {

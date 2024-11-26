@@ -1,5 +1,4 @@
 import taskmanager.*;
-import taskmanager.TaskStatus;
 
 public class Main {
 
@@ -28,6 +27,11 @@ public class Main {
 
         System.out.println("\n\nUPDATED\n\n");
 
+        System.out.println(tm.getAllSimpleTasks());
+        System.out.println(tm.getAllEpicTasks());
+        System.out.println(tm.getAllSubtasks());
+        tm.removeTask(sub1);
+        tm.removeTask(epic2);
         System.out.println(tm.getAllSimpleTasks());
         System.out.println(tm.getAllEpicTasks());
         System.out.println(tm.getAllSubtasks());

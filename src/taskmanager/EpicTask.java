@@ -18,6 +18,10 @@ public class EpicTask extends Task {
         subtasks.add(subtask);
     }
 
+    void removeSubtask(SubTask subtask) {
+        subtasks.remove(subtask);
+    }
+
     @Override
     public String toString() {
         return "EpicTask{name='" + name + "', status='" + status + "', id=" + id + ", subtasks=" + subtasks.toString() + "}";
