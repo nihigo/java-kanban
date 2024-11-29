@@ -40,11 +40,11 @@ public class TaskManager {
     }
 
     public int addTask(Task task) {
-        if (task != null && task.getClass() == Task.class) {
+        if (task != null) {
             task.setId(taskCounter);
             tasks.put(taskCounter, task);
         } else {
-            throw new IllegalArgumentException("Task class must be Task");
+            throw new NullPointerException("task is null");
         }
         return taskCounter++;
     }
@@ -137,10 +137,10 @@ public class TaskManager {
     public void updateTask(Task newTask) {
         int id = newTask.getId();
         Task oldTask = getTask(id);
-        if (Objects.equals(oldTask, newTask) && newTask.getClass() == Task.class) {
+        if (Objects.equals(oldTask, newTask)) {
            tasks.put(id, newTask);
         } else {
-            throw new IllegalArgumentException("newTask is either not Task type or null");
+            throw new IllegalArgumentException("this task is either not added or null");
         }
     }
 
@@ -162,7 +162,7 @@ public class TaskManager {
                 calculateEpicStatus(newEpic);
             }
         } else {
-            throw new IllegalArgumentException("this newEpic is either not added yet or null");
+            throw new IllegalArgumentException("this epic is either not added yet or null");
         }
     }
 
@@ -179,7 +179,7 @@ public class TaskManager {
             newEpic.addSubtask(newSubtask);
             calculateEpicStatus(newEpic);
         } else {
-            throw new IllegalArgumentException("this newSubtask is either not added yet or null");
+            throw new IllegalArgumentException("this subtask is either not added yet or null");
         }
     }
 
