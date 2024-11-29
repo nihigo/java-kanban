@@ -2,102 +2,192 @@ package taskmanager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class TaskManager {
     private int taskCounter = 0;
 
-    private final HashMap<Integer, Task> simpleTasks = new HashMap<>();
-    private final HashMap<Integer, SubTask> subTasks = new HashMap<>();
-    private final HashMap<Integer, EpicTask> epicTasks = new HashMap<>();
+    private final HashMap<Integer, Task> tasks = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private final HashMap<Integer, Epic> epics = new HashMap<>();
 
-    public int addTask(Task task) {
-        if (task.getClass() == EpicTask.class) {
-            epicTasks.put(taskCounter, (EpicTask) task);
-        } else if (task.getClass() == SubTask.class) {
-            SubTask subTask = (SubTask) task;
-            if (epicTasks.containsKey(subTask.getEpicId())) {
-                epicTasks.get(subTask.getEpicId()).addSubtask(subTask);
-                subTasks.put(taskCounter, subTask);
-            }
-        } else if (task.getClass() == Task.class) {
-            simpleTasks.put(taskCounter, task);
+    public int addEpic(Epic epic) {
+        if (epic != null) {
+            epic.setId(taskCounter);
+            epics.put(taskCounter, epic);
+        } else {
+            throw new NullPointerException("Epic is null");
         }
-        task.setId(taskCounter);
         return taskCounter++;
     }
 
-    public Task getTaskByID(int id) {
-        if (simpleTasks.containsKey(id)) {
-            return simpleTasks.get(id);
-        } else if (epicTasks.containsKey(id)) {
-            return epicTasks.get(id);
+    public int addSubtask(Subtask subtask) {
+        if (subtask != null) {
+            subtask.setId(taskCounter);
+            subtasks.put(taskCounter, subtask);
+            int epicID = subtask.getEpicId();
+            if (epics.containsKey(epicID)) {
+                Epic epic = epics.get(epicID);
+                epic.addSubtask(subtask);
+                calculateEpicStatus(epic);
+                subtasks.put(taskCounter, subtask);
+            }
         } else {
-            return subTasks.getOrDefault(id, null);
+            throw new NullPointerException("subtask is null");
         }
+        return taskCounter++;
+    }
+
+    public int addTask(Task task) {
+        if (task != null && task.getClass() == Task.class) {
+            task.setId(taskCounter);
+            tasks.put(taskCounter, task);
+        } else {
+            throw new IllegalArgumentException("Task class must be Task");
+        }
+        return taskCounter++;
+    }
+
+    public Task getTask(int id) {
+        return tasks.get(id);
+    }
+
+    public Subtask getSubtask(int id) {
+        return subtasks.get(id);
+    }
+
+    public Epic getEpic(int id) {
+        return epics.get(id);
     }
 
     public void removeTask(int id) {
-        if (subTasks.containsKey(id)) {
-            EpicTask epicTask = epicTasks.get(subTasks.get(id).getEpicId());
-            epicTask.removeSubtask(subTasks.get(id));
-            this.calculateEpicStatus(epicTask);
-            subTasks.remove(id);
-        } else if (epicTasks.containsKey(id)) {
-            for (SubTask subTask : getSubtasksOfEpic(id)) {
-                subTasks.remove(subTask.getId());
-            }
-            epicTasks.remove(id);
+        if (tasks.containsKey(id)) {
+            tasks.remove(id);
         } else {
-            simpleTasks.remove(id);
+            throw new NoSuchElementException("Task with id " + id + " is not found. Probably wrong type");
+        }
+        tasks.remove(id);
+    }
+
+    public void removeSubtask(int id) {
+        if (subtasks.containsKey(id)) {
+            Epic epic = epics.get(subtasks.get(id).getEpicId());
+            epic.removeSubtask(subtasks.get(id));
+            calculateEpicStatus(epic);
+            subtasks.remove(id);
+        } else {
+            throw new NoSuchElementException("Subtask with id " + id + " is not found. Probably wrong type");
+        }
+
+    }
+
+    public void removeEpic(int id) {
+        if (epics.containsKey(id)) {
+            // Не уверен, что стоит их удалять, но они инвалидируются.
+            // Поэтому удаление, возможно, поможет избежать некоторых ошибок
+            for (Subtask subtask : getSubtasksOfEpic(id)) {
+                subtasks.remove(subtask.getId());
+            }
+            epics.remove(id);
+        } else {
+            throw new NoSuchElementException("Epic with id " + id + " is not found. Probably wrong type");
         }
     }
 
-    public void clearAll() {
-        simpleTasks.clear();
-        epicTasks.clear();
-        subTasks.clear();
+    public void clearTasks() {
+        tasks.clear();
     }
 
-    public ArrayList<SubTask> getSubtasksOfEpic(int epicId) {
-        if (epicTasks.containsKey(epicId)) {
-            return epicTasks.get(epicId).getSubtasks();
+    public void clearSubtasks() {
+        subtasks.clear();
+        // Аналогично
+        for (Epic epic : epics.values()) {
+            epic.clearSubtasks();
+        }
+    }
+
+    public void clearEpics() {
+        // Не уверен, что это корректное поведение метода.
+        // Но при удалении Эпиков инвалидируются все Сабтаски, так что тоже очищаю
+        subtasks.clear();
+        epics.clear();
+    }
+
+    public ArrayList<Subtask> getSubtasksOfEpic(int epicId) {
+        if (epics.containsKey(epicId)) {
+            return epics.get(epicId).getSubtasks();
         }
         return null;
     }
 
-    public ArrayList<Task> getAllSimpleTasks() {
-        return new ArrayList<>(simpleTasks.values());
+    public ArrayList<Task> getAllTasks() {
+        return new ArrayList<>(tasks.values());
     }
 
-    public ArrayList<Task> getAllEpicTasks() {
-        return new ArrayList<>(epicTasks.values());
+    public ArrayList<Epic> getAllEpics() {
+        return new ArrayList<>(epics.values());
     }
 
-    public ArrayList<Task> getAllSubtasks() {
-        return new ArrayList<>(subTasks.values());
+    public ArrayList<Subtask> getAllSubtasks() {
+        return new ArrayList<>(subtasks.values());
     }
+
 
     public void updateTask(Task newTask) {
         int id = newTask.getId();
-        Task oldTask = getTaskByID(id);
-
-        if (Objects.equals(oldTask, newTask)) {
-            if (newTask.getClass() != EpicTask.class) {
-                oldTask.setStatus(newTask.getStatus());
-                if (newTask.getClass() == SubTask.class) {
-                    EpicTask epicTask = epicTasks.get(((SubTask) newTask).getEpicId());
-                    this.calculateEpicStatus(epicTask);
-                }
-            }
+        Task oldTask = getTask(id);
+        if (Objects.equals(oldTask, newTask) && newTask.getClass() == Task.class) {
+           tasks.put(id, newTask);
+        } else {
+            throw new IllegalArgumentException("newTask is either not Task type or null");
         }
     }
 
-    private void calculateEpicStatus(EpicTask epic) {
+    public void updateEpic(Epic newEpic) {
+        int id = newEpic.getId();
+        Epic oldEpic = getEpic(id);
+        if (Objects.equals(oldEpic, newEpic)) {
+            ArrayList<Subtask> oldSubtasks = oldEpic.getSubtasks();
+            ArrayList<Subtask> newSubtasks = newEpic.getSubtasks();
+            if (!oldSubtasks.equals(newSubtasks)) {
+                for (Subtask subtask : newSubtasks) {
+                    if (!subtasks.containsKey(subtask.getId())) {
+                        subtasks.put(subtask.getId(), subtask);
+                    }
+                }
+            }
+            epics.put(id, newEpic);
+            if (!newEpic.getSubtasks().isEmpty()) {
+                calculateEpicStatus(newEpic);
+            }
+        } else {
+            throw new IllegalArgumentException("this newEpic is either not added yet or null");
+        }
+    }
+
+    public void updateSubtask(Subtask newSubtask) {
+        int id = newSubtask.getId();
+        Subtask oldSubtask = getSubtask(id);
+        if (Objects.equals(oldSubtask, newSubtask)) {
+            subtasks.put(id, newSubtask);
+
+            Epic oldEpic = getEpic(oldSubtask.getEpicId());
+            oldEpic.removeSubtask(oldSubtask);
+
+            Epic newEpic = getEpic(newSubtask.getEpicId());
+            newEpic.addSubtask(newSubtask);
+            calculateEpicStatus(newEpic);
+        } else {
+            throw new IllegalArgumentException("this newSubtask is either not added yet or null");
+        }
+    }
+
+    private void calculateEpicStatus(Epic epic) {
         int sumStatus = 0;
-        ArrayList<SubTask> subtasksOfEpic = epic.getSubtasks();
-        for (SubTask subTask : subtasksOfEpic) {
-            sumStatus += switch (subTask.getStatus()) {
+        ArrayList<Subtask> subtasksOfEpic = epic.getSubtasks();
+        for (Subtask subtask : subtasksOfEpic) {
+            sumStatus += switch (subtask.getStatus()) {
                 case NEW -> 0;
                 case IN_PROGRESS -> 1;
                 case DONE -> 2;

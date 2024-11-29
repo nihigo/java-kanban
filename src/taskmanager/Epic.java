@@ -2,24 +2,28 @@ package taskmanager;
 
 import java.util.ArrayList;
 
-public class EpicTask extends Task {
-    private final ArrayList<SubTask> subtasks;
+public class Epic extends SuperTask {
+    private final ArrayList<Subtask> subtasks;
 
-    public EpicTask(String name, String description, TaskStatus status) {
+    public Epic(String name, String description, TaskStatus status) {
         super(name, description, status);
         subtasks = new ArrayList<>();
     }
 
-    ArrayList<SubTask> getSubtasks() {
+    ArrayList<Subtask> getSubtasks() {
         return subtasks;
     }
 
-    void addSubtask(SubTask subtask) {
+    void addSubtask(Subtask subtask) {
         subtasks.add(subtask);
     }
 
-    void removeSubtask(SubTask subtask) {
+    void removeSubtask(Subtask subtask) {
         subtasks.remove(subtask);
+    }
+
+    void clearSubtasks() {
+        subtasks.clear();
     }
 
     @Override
