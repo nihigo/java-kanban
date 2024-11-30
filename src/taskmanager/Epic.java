@@ -2,12 +2,17 @@ package taskmanager;
 
 import java.util.ArrayList;
 
-public class Epic extends SuperTask {
+public class Epic extends Task {
     private final ArrayList<Subtask> subtasks;
 
     public Epic(String name, String description, TaskStatus status) {
         super(name, description, status);
         subtasks = new ArrayList<>();
+    }
+
+    public Epic(String name, String description, TaskStatus status, ArrayList<Subtask> subtasks) {
+        super(name, description, status);
+        this.subtasks = subtasks == null ? new ArrayList<>() : subtasks;
     }
 
     ArrayList<Subtask> getSubtasks() {

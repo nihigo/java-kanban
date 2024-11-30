@@ -36,5 +36,6 @@ public class Main {
         System.out.println(tm.getAllTasks());
         System.out.println(tm.getAllEpics());
         System.out.println(tm.getAllSubtasks());
+
     }
 }

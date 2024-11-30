@@ -1,6 +1,6 @@
 package taskmanager;
 
-public class Subtask extends SuperTask {
+public class Subtask extends Task {
     private final int epicID;
 
     public Subtask(Subtask subTask, TaskStatus newStatus) {
