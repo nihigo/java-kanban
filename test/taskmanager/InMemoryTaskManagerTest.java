@@ -111,8 +111,8 @@ class InMemoryTaskManagerTest {
         tm.getTask(taskId);
 
         ArrayList<Task> history = new ArrayList<>();
-        history.add(task);
         history.add(epic);
+        history.add(task);
 
         assertEquals(history, tm.getHistory());
     }
@@ -125,8 +125,8 @@ class InMemoryTaskManagerTest {
         int taskId = tm.addTask(task);
 
         ArrayList<Task> history = new ArrayList<>();
-        history.add(task);
         history.add(epic);
+        history.add(task);
 
         tm.getEpic(epicId);
         tm.getTask(taskId);

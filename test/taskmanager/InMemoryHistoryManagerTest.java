@@ -38,9 +38,9 @@ class InMemoryHistoryManagerTest {
         hm.add(task);
 
         ArrayList<Task> result = new ArrayList<>();
-        result.add(task);
-        result.add(subtask);
         result.add(epic);
+        result.add(subtask);
+        result.add(task);
 
         assertEquals(result, hm.getHistory());
     }
@@ -55,7 +55,7 @@ class InMemoryHistoryManagerTest {
         }
 
         ArrayList<Task> result = new ArrayList<>();
-        for (int i = 14; i >= 5; i--) {
+        for (int i = 5; i < 15; i++) {
             Task task = new Task("a", "b", TaskStatus.NEW);
             task.setId(i);
             result.add(task);

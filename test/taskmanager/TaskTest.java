@@ -38,7 +38,7 @@ class TaskTest {
         subtask.setId(1);
 
         assertNotEquals(task, epic, "equals() should return false with different type");
-        assertNotEquals(task, subtask, "equals() should return false with different id");
+        assertNotEquals(task, subtask, "equals() should return false with different type");
     }
 
     @Test

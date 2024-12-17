@@ -11,7 +11,7 @@ class SubtaskTest {
     static Subtask subtask;
 
     @BeforeAll
-    static void setUpEpic() throws Exception {
+    static void setUpEpic()  {
         someEpic = new Epic("a", "b", TaskStatus.NEW);
         someEpic.setId(0);
     }
@@ -35,7 +35,7 @@ class SubtaskTest {
         Subtask subtask2 = new Subtask("c", "d", TaskStatus.DONE, 0);
         subtask2.setId(2);
 
-        assertEquals(subtask, subtask2, "equals() should return true with same id");
+        assertNotEquals(subtask, subtask2, "equals() should false with different id");
     }
 
     @Test
@@ -46,7 +46,7 @@ class SubtaskTest {
         task.setId(1);
 
         assertNotEquals(subtask, epic, "equals() should return false with different type");
-        assertNotEquals(subtask, task, "equals() should return false with different id");
+        assertNotEquals(subtask, task, "equals() should return false with different type");
     }
 
     @Test
