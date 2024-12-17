@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
-        TaskManager tm = new TaskManager();
+        TaskManager tm = new InMemoryTaskManager();
         int task1 = tm.addTask(new Task("task_1", "do smth 1", TaskStatus.NEW));
         int task2 = tm.addTask(new Task("task_2", "do smth 2", TaskStatus.NEW));
         int epic1 = tm.addEpic(new Epic("epic_1", "epic descr. 1", TaskStatus.NEW));
@@ -36,6 +36,19 @@ public class Main {
         System.out.println(tm.getAllTasks());
         System.out.println(tm.getAllEpics());
         System.out.println(tm.getAllSubtasks());
+        System.out.println("==HISTORY==");
 
+        tm.getEpic(3);
+        tm.getEpic(3);
+        tm.getEpic(3);
+        tm.getTask(2);
+        tm.getTask(1);
+        tm.getSubtask(5);
+        var list = tm.getHistory();
+        int i = 1;
+        for (var task : list) {
+            System.out.println(i++ + ". " + task);
+        }
+        System.out.println(tm.getHistory());
     }
 }

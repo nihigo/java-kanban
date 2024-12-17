@@ -3,7 +3,7 @@ package taskmanager;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private final ArrayList<Subtask> subtasks;
+    private ArrayList<Subtask> subtasks;
 
     public Epic(String name, String description, TaskStatus status) {
         super(name, description, status);
@@ -13,6 +13,13 @@ public class Epic extends Task {
     public Epic(String name, String description, TaskStatus status, ArrayList<Subtask> subtasks) {
         super(name, description, status);
         this.subtasks = subtasks == null ? new ArrayList<>() : subtasks;
+    }
+
+    void updateFields(Epic other) {
+        if (other != null) {
+            super.updateFields(other);
+            this.subtasks = other.subtasks;
+        }
     }
 
     ArrayList<Subtask> getSubtasks() {

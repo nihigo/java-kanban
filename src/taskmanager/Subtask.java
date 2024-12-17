@@ -1,16 +1,23 @@
 package taskmanager;
 
 public class Subtask extends Task {
-    private final int epicID;
+    private int epicID;
 
-    public Subtask(Subtask subTask, TaskStatus newStatus) {
-        super(subTask, newStatus);
-        this.epicID = subTask.epicID;
+    public Subtask(Subtask subtask, TaskStatus newStatus) {
+        super(subtask, newStatus);
+        this.epicID = subtask.epicID;
     }
 
     public Subtask(String name, String description, TaskStatus status, int epicID) {
         super(name, description, status);
         this.epicID = epicID;
+    }
+
+    void updateFields(Subtask other) {
+        if (other != null) {
+            super.updateFields(other);
+            this.epicID = other.epicID;
+        }
     }
 
     public int getEpicId() {

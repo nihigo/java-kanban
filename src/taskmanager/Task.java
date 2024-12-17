@@ -1,17 +1,6 @@
 package taskmanager;
 
 public class Task {
-    /* Ревьюеру:
-        Насчет того что Эпик и Сабтаск должны быть именно наследниками Таска,
-        я читал тз, но мне кажется что лучше все же сделать Таск наследником абстрактного класса,
-        т.к. это позволит на уровне компиляции избежать ошибок при передаче наследника как аргумент
-        (например addTask(new Epic(...)) ). Иначе я вынужден кидать дополнительные исключения
-        или просто не сообщать пользователю об ошибке, что потенциально затрудняет использование ТаскМенеджера для пользователя
-
-        Можете, пожалуйста, объяснить в чем преимущество структуры проекта из тз?
-        или это замечание из серии "не соответствует тз" без логического обоснования?
-     */
-
     protected String name;
     protected String description;
     protected int id;
@@ -28,6 +17,15 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
+    }
+
+    void updateFields(Task other) {
+        if (other != null) {
+            this.name = other.name;
+            this.description = other.description;
+            this.id = other.id;
+            this.status = other.status;
+        }
     }
 
     public String getName() {
