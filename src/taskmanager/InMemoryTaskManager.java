@@ -2,16 +2,17 @@ package taskmanager;
 
 import taskmanager.historymanager.HistoryManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class InMemoryTaskManager implements TaskManager {
-    private int taskCounter = 0;
-
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
-
     private final HistoryManager historyManager = Managers.getDefaultHistory();
+    private int taskCounter = 0;
 
     @Override
     public int addEpic(Epic epic) {
