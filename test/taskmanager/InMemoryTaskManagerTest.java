@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -110,11 +111,7 @@ class InMemoryTaskManagerTest {
         tm.getEpic(epicId);
         tm.getTask(taskId);
 
-        ArrayList<Task> history = new ArrayList<>();
-        history.add(epic);
-        history.add(task);
-
-        assertEquals(history, tm.getHistory());
+        assertEquals(List.of(epic, task), tm.getHistory());
     }
 
     @Test
@@ -124,14 +121,96 @@ class InMemoryTaskManagerTest {
         Task task = new Task("a", "b", TaskStatus.NEW);
         int taskId = tm.addTask(task);
 
-        ArrayList<Task> history = new ArrayList<>();
-        history.add(epic);
-        history.add(task);
-
         tm.getEpic(epicId);
         tm.getTask(taskId);
         tm.updateTask(new Task(task, TaskStatus.IN_PROGRESS));
 
-        assertEquals(history, tm.getHistory());
+        assertEquals(List.of(epic, task), tm.getHistory());
     }
+
+    @Test
+    void historyUpdatesWhenTaskRemoved() {
+        Epic epic = new Epic("a", "b", TaskStatus.NEW);
+        int epicId = tm.addEpic(epic);
+        Task task = new Task("a", "b", TaskStatus.NEW);
+        int taskId = tm.addTask(task);
+        Subtask subtask = new Subtask("a", "b", TaskStatus.NEW, epicId);
+        int subtaskId = tm.addSubtask(subtask);
+
+        tm.getEpic(epicId);
+        tm.getTask(taskId);
+        tm.getSubtask(subtaskId);
+
+        tm.removeTask(taskId);
+        assertEquals(List.of(epic, subtask), tm.getHistory());
+
+        tm.removeEpic(epicId);
+        assertEquals(List.of(), tm.getHistory());
+    }
+
+    @Test
+    void historyUpdatesWhenEpicsCleared() {
+        Epic epic = new Epic("a", "b", TaskStatus.NEW);
+        int epicId = tm.addEpic(epic);
+        Subtask subtask = new Subtask("a", "b", TaskStatus.NEW, epicId);
+        int subtaskId = tm.addSubtask(subtask);
+        Epic epic2 = new Epic("a", "b", TaskStatus.NEW);
+        int epicId2 = tm.addEpic(epic2);
+        Task task = new Task("a", "b", TaskStatus.NEW);
+        int taskId = tm.addTask(task);
+
+        tm.getEpic(epicId);
+        tm.getTask(taskId);
+        tm.getSubtask(subtaskId);
+        tm.getEpic(epicId2);
+
+        tm.clearEpics();
+
+        assertEquals(List.of(task), tm.getHistory());
+    }
+
+    @Test
+    void historyUpdatesWhenSubtasksCleared() {
+        Epic epic1 = new Epic("a", "b", TaskStatus.NEW);
+        int epicId1 = tm.addEpic(epic1);
+        Subtask subtask1 = new Subtask("a", "b", TaskStatus.NEW, epicId1);
+        int subtaskId1 = tm.addSubtask(subtask1);
+        Subtask subtask2 = new Subtask("a", "b", TaskStatus.NEW, epicId1);
+        int subtaskId2 = tm.addSubtask(subtask2);
+        Epic epic2 = new Epic("a", "b", TaskStatus.NEW);
+        int epicId2 = tm.addEpic(epic2);
+        Task task1 = new Task("a", "b", TaskStatus.NEW);
+        int taskId1 = tm.addTask(task1);
+
+        tm.getEpic(epicId1);
+        tm.getTask(taskId1);
+        tm.getSubtask(subtaskId1);
+        tm.getEpic(epicId2);
+        tm.getSubtask(subtaskId2);
+
+        tm.clearSubtasks();
+
+        assertEquals(List.of(epic1, task1, epic2), tm.getHistory());
+    }
+
+    @Test
+    void historyUpdatesWhenTasksCleared() {
+        Epic epic1 = new Epic("a", "b", TaskStatus.NEW);
+        int epicId1 = tm.addEpic(epic1);
+        Subtask subtask1 = new Subtask("a", "b", TaskStatus.NEW, epicId1);
+        int subtaskId1 = tm.addSubtask(subtask1);
+        Epic epic2 = new Epic("a", "b", TaskStatus.NEW);
+        int epicId2 = tm.addEpic(epic2);
+        Task task1 = new Task("a", "b", TaskStatus.NEW);
+        int taskId1 = tm.addTask(task1);
+
+        tm.getEpic(epicId1);
+        tm.getTask(taskId1);
+        tm.getSubtask(subtaskId1);
+        tm.getEpic(epicId2);
+
+        tm.clearTasks();
+        assertEquals(List.of(epic1, subtask1, epic2), tm.getHistory());
+    }
+
 }
